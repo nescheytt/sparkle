@@ -9,7 +9,7 @@ import {
 import MaxWidthWrapper from "@/components/max-width-wrapper"
 import { buttonVariants } from "@/components/ui/button"
 import UserAccountNav from '@/components/user-account-nav'
-// import MobileNav from '@/components/mobile-nav'
+import MobileNav from '@/components/mobile-nav'
 
 const Navbar = async () => {
   const { getUser } = getKindeServerSession()
@@ -23,7 +23,7 @@ const Navbar = async () => {
             <span>sparkle.</span>
           </Link>
 
-          {/* <MobileNav isAuth={!!user} /> */}
+          <MobileNav isAuth={!!user} />
 
           <div className="hidden items-center space-x-4 sm:flex">
             {!user ? (
