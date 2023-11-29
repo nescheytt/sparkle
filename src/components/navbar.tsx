@@ -8,12 +8,12 @@ import {
 
 import MaxWidthWrapper from "@/components/max-width-wrapper"
 import { buttonVariants } from "@/components/ui/button"
-// import UserAccountNav from '@/components/user-account-nav'
+import UserAccountNav from '@/components/user-account-nav'
 // import MobileNav from '@/components/mobile-nav'
 
-const Navbar = () => {
+const Navbar = async () => {
   const { getUser } = getKindeServerSession()
-  const user = getUser()
+  const user = await getUser()
 
   return (
     <nav className="sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
@@ -26,34 +26,34 @@ const Navbar = () => {
           {/* <MobileNav isAuth={!!user} /> */}
 
           <div className="hidden items-center space-x-4 sm:flex">
-            {/* {!user ? ( */}
-            <>
-              <Link
-                href="/pricing"
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                })}
-              >
-                Pricing
-              </Link>
-              <LoginLink
-                className={buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                })}
-              >
-                Sign in
-              </LoginLink>
-              <RegisterLink
-                className={buttonVariants({
-                  size: "sm",
-                })}
-              >
-                Get started <ArrowRight className="ml-1.5 h-5 w-5" />
-              </RegisterLink>
-            </>
-            {/* ) : (
+            {!user ? (
+              <>
+                <Link
+                  href="/pricing"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
+                  Pricing
+                </Link>
+                <LoginLink
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
+                  Sign in
+                </LoginLink>
+                <RegisterLink
+                  className={buttonVariants({
+                    size: "sm",
+                  })}
+                >
+                  Get started <ArrowRight className="ml-1.5 h-5 w-5" />
+                </RegisterLink>
+              </>
+            ) : (
               <>
                 <Link
                   href='/dashboard'
@@ -74,7 +74,7 @@ const Navbar = () => {
                   imageUrl={user.picture ?? ''}
                 />
               </>
-            )} */}
+            )}
           </div>
         </div>
       </MaxWidthWrapper>
