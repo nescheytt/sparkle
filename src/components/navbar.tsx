@@ -8,8 +8,8 @@ import {
 
 import MaxWidthWrapper from "@/components/max-width-wrapper"
 import { buttonVariants } from "@/components/ui/button"
-import UserAccountNav from '@/components/user-account-nav'
-import MobileNav from '@/components/mobile-nav'
+import UserAccountNav from "@/components/user-account-nav"
+import MobileNav from "@/components/mobile-nav"
 
 const Navbar = async () => {
   const { getUser } = getKindeServerSession()
@@ -56,22 +56,23 @@ const Navbar = async () => {
             ) : (
               <>
                 <Link
-                  href='/dashboard'
+                  href="/dashboard"
                   className={buttonVariants({
-                    variant: 'ghost',
-                    size: 'sm',
-                  })}>
+                    variant: "ghost",
+                    size: "sm",
+                  })}
+                >
                   Dashboard
                 </Link>
 
                 <UserAccountNav
                   name={
-                    !user.given_name || !user.family_name
-                      ? 'Your Account'
-                      : `${user.given_name} ${user.family_name}`
+                    !user?.given_name || !user?.family_name
+                      ? "Your Account"
+                      : `${user?.given_name} ${user?.family_name}`
                   }
-                  email={user.email ?? ''}
-                  imageUrl={user.picture ?? ''}
+                  email={user?.email ?? ""}
+                  imageUrl={user?.picture ?? ""}
                 />
               </>
             )}

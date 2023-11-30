@@ -6,7 +6,13 @@ import { getUserSubscriptionPlan } from "@/lib/stripe"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Icons } from "@/components/icons"
 import { Gem } from "lucide-react"
 
@@ -16,7 +22,11 @@ interface UserAccountNavProps {
   name: string
 }
 
-const UserAccountNav = async ({ email, imageUrl, name }: UserAccountNavProps) => {
+const UserAccountNav = async ({
+  email,
+  imageUrl,
+  name,
+}: UserAccountNavProps) => {
   const subscriptionPlan = await getUserSubscriptionPlan()
 
   return (
@@ -29,30 +39,26 @@ const UserAccountNav = async ({ email, imageUrl, name }: UserAccountNavProps) =>
                 <Image
                   fill
                   src={imageUrl}
-                  alt='profile picture'
-                  referrerPolicy='no-referrer'
+                  alt="profile picture"
+                  referrerPolicy="no-referrer"
                 />
               </div>
             ) : (
               <AvatarFallback>
-                <span className='sr-only'>{name}</span>
-                <Icons.user className='h-4 w-4 text-zinc-900' />
+                <span className="sr-only">{name}</span>
+                <Icons.user className="h-4 w-4 text-zinc-900" />
               </AvatarFallback>
             )}
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className='bg-white' align='end'>
-        <div className='flex items-center justify-start gap-2 p-2'>
-          <div className='flex flex-col space-y-0.5 leading-none'>
-            {name && (
-              <p className='font-medium text-sm text-black'>
-                {name}
-              </p>
-            )}
+      <DropdownMenuContent className="bg-white" align="end">
+        <div className="flex items-center justify-start gap-2 p-2">
+          <div className="flex flex-col space-y-0.5 leading-none">
+            {name && <p className="font-medium text-sm text-black">{name}</p>}
             {email && (
-              <p className='w-[200px] truncate text-xs text-zinc-700'>
+              <p className="w-[200px] truncate text-xs text-zinc-700">
                 {email}
               </p>
             )}
@@ -62,25 +68,22 @@ const UserAccountNav = async ({ email, imageUrl, name }: UserAccountNavProps) =>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href='/dashboard'>Dashboard</Link>
+          <Link href="/dashboard">Dashboard</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
           {subscriptionPlan?.isSubscribed ? (
-            <Link href='/dashboard/billing'>
-              Manage Subscription
-            </Link>
+            <Link href="/dashboard/billing">Manage Subscription</Link>
           ) : (
-            <Link href='/pricing'>
-              Upgrade{' '}
-              <Gem className='text-blue-600 h-4 w-4 ml-1.5' />
+            <Link href="/pricing">
+              Upgrade <Gem className="text-blue-600 h-4 w-4 ml-1.5" />
             </Link>
           )}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className='cursor-pointer'>
+        <DropdownMenuItem className="cursor-pointer">
           <LogoutLink>Log out</LogoutLink>
         </DropdownMenuItem>
       </DropdownMenuContent>
