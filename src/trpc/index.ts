@@ -1,15 +1,12 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
-import { z } from "zod"
-
-import { db } from "@/db"
-import { TRPCError } from "@trpc/server"
 import { privateProcedure, publicProcedure, router } from "./trpc"
-
+import { TRPCError } from "@trpc/server"
+import { db } from "@/db"
+import { z } from "zod"
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query"
-import { PLANS } from "@/config/stripe"
-
-import { getUserSubscriptionPlan, stripe } from "@/lib/stripe"
 import { absoluteUrl } from "@/lib/utils"
+import { getUserSubscriptionPlan, stripe } from "@/lib/stripe"
+import { PLANS } from "@/config/stripe"
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
@@ -21,7 +18,7 @@ export const appRouter = router({
     // check if the user is in the database
     const dbUser = await db.user.findFirst({
       where: {
-        id: user.id,
+        id: user?.id,
       },
     })
 
@@ -29,15 +26,14 @@ export const appRouter = router({
       // create user in db
       await db.user.create({
         data: {
-          id: user.id,
-          email: user.email,
+          id: user?.id,
+          email: user?.email,
         },
       })
     }
 
     return { success: true }
   }),
-
   getUserFiles: privateProcedure.query(async ({ ctx }) => {
     const { userId } = ctx
 
@@ -53,9 +49,7 @@ export const appRouter = router({
 
     const billingUrl = absoluteUrl("/dashboard/billing")
 
-    if (!userId) {
-      throw new TRPCError({ code: "UNAUTHORIZED" })
-    }
+    if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" })
 
     const dbUser = await db.user.findFirst({
       where: {
@@ -63,9 +57,7 @@ export const appRouter = router({
       },
     })
 
-    if (!dbUser) {
-      throw new TRPCError({ code: "UNAUTHORIZED" })
-    }
+    if (!dbUser) throw new TRPCError({ code: "UNAUTHORIZED" })
 
     const subscriptionPlan = await getUserSubscriptionPlan()
 
@@ -75,9 +67,7 @@ export const appRouter = router({
         return_url: billingUrl,
       })
 
-      return {
-        url: stripeSession.url,
-      }
+      return { url: stripeSession.url }
     }
 
     const stripeSession = await stripe.checkout.sessions.create({
@@ -120,9 +110,7 @@ export const appRouter = router({
         },
       })
 
-      if (!file) {
-        throw new TRPCError({ code: "NOT_FOUND" })
-      }
+      if (!file) throw new TRPCError({ code: "NOT_FOUND" })
 
       const messages = await db.message.findMany({
         take: limit + 1,
@@ -142,7 +130,6 @@ export const appRouter = router({
       })
 
       let nextCursor: typeof cursor | undefined = undefined
-
       if (messages.length > limit) {
         const nextItem = messages.pop()
         nextCursor = nextItem?.id

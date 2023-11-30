@@ -8,11 +8,12 @@ import { Toaster } from "@/components/ui/toaster"
 import Navbar from "@/components/navbar"
 import Providers from "@/components/providers"
 
-import { cn, constructMetadata } from "@/lib/utils"
+import { cn, constructMetadata, constructViewport } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = constructMetadata()
+export const viewport = constructViewport()
 
 export default function RootLayout({
   children,

@@ -1,10 +1,10 @@
+import { db } from "@/db"
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { createUploadthing, type FileRouter } from "uploadthing/next"
+
 import { PDFLoader } from "langchain/document_loaders/fs/pdf"
 import { OpenAIEmbeddings } from "langchain/embeddings/openai"
 import { PineconeStore } from "langchain/vectorstores/pinecone"
-
-import { db } from "@/db"
 import { getPineconeClient } from "@/lib/pinecone"
 import { getUserSubscriptionPlan } from "@/lib/stripe"
 import { PLANS } from "@/config/stripe"
@@ -15,16 +15,11 @@ const middleware = async () => {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  if (!user || !user.id) {
-    throw new Error("Unauthorized")
-  }
+  if (!user || !user?.id) throw new Error("Unauthorized")
 
   const subscriptionPlan = await getUserSubscriptionPlan()
 
-  return {
-    subscriptionPlan,
-    userId: user.id,
-  }
+  return { subscriptionPlan, userId: user?.id }
 }
 
 const onUploadComplete = async ({
@@ -44,7 +39,7 @@ const onUploadComplete = async ({
     },
   })
 
-  if (!isFileExist) return
+  if (isFileExist) return
 
   const createdFile = await db.file.create({
     data: {
@@ -60,21 +55,22 @@ const onUploadComplete = async ({
     const response = await fetch(
       `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
     )
+
     const blob = await response.blob()
 
     const loader = new PDFLoader(blob)
 
     const pageLevelDocs = await loader.load()
 
-    const pageAmt = pageLevelDocs.length
+    const pagesAmt = pageLevelDocs.length
 
     const { subscriptionPlan } = metadata
     const { isSubscribed } = subscriptionPlan
 
     const isProExceeded =
-      pageAmt > PLANS.find((plan) => plan.name === "Pro")!.pagesPerPdf
+      pagesAmt > PLANS.find((plan) => plan.name === "Pro")!.pagesPerPdf
     const isFreeExceeded =
-      pageAmt > PLANS.find((plan) => plan.name === "Free")!.pagesPerPdf
+      pagesAmt > PLANS.find((plan) => plan.name === "Free")!.pagesPerPdf
 
     if ((isSubscribed && isProExceeded) || (!isSubscribed && isFreeExceeded)) {
       await db.file.update({
@@ -92,7 +88,7 @@ const onUploadComplete = async ({
     const pineconeIndex = pinecone.Index("sparkle")
 
     const embeddings = new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY,
+      openAIApiKey: process.env.OPENAI_API_KEY!,
     })
 
     await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
@@ -109,7 +105,8 @@ const onUploadComplete = async ({
         id: createdFile.id,
       },
     })
-  } catch (error) {
+  } catch (err) {
+    console.log({ err })
     await db.file.update({
       data: {
         uploadStatus: "FAILED",

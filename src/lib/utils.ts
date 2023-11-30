@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import { Metadata, Viewport } from "next"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -46,12 +46,17 @@ export function constructMetadata({
     },
     icons,
     metadataBase: new URL("https://sparkle-six.vercel.app"),
-    themeColor: "#FFF",
     ...(noIndex && {
       robots: {
         index: false,
         follow: false,
       },
     }),
+  }
+}
+
+export function constructViewport(): Viewport {
+  return {
+    themeColor: "#FFF",
   }
 }
